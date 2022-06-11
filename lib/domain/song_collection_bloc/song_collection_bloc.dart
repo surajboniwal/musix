@@ -34,6 +34,9 @@ class SongCollectionBloc extends Bloc<SongCollectionEvent, SongCollectionState> 
         PaletteGenerator paletteGenerator = await PaletteGenerator.fromImageProvider(
             CachedNetworkImageProvider(songCollection.data.image));
         color = paletteGenerator.dominantColor?.color ?? Colors.black;
+        if (color.computeLuminance() > 0.5) {
+          color = HSLColor.fromColor(color).withLightness(0.40).toColor();
+        }
         emit(SongCollectionState.data(songCollection.data));
       }
     });

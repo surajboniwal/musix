@@ -24,7 +24,7 @@ class SongBloc extends Bloc<SongEvent, SongState> {
               await PaletteGenerator.fromImageProvider(CachedNetworkImageProvider(song.image));
           color = paletteGenerator.dominantColor?.color ?? Colors.black;
           if (color.computeLuminance() > 0.5) {
-            color = HSLColor.fromColor(color).withLightness(0.60).toColor();
+            color = HSLColor.fromColor(color).withLightness(0.40).toColor();
           }
           emit(SongState.song(song));
         },
