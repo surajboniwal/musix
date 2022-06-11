@@ -17,120 +17,132 @@ class SongCollectionScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(),
-      body: BlocProvider<SongCollectionBloc>(
-        create: (context) => SongCollectionBloc(context.read<SaavnRepository>())
-          ..add(SongCollectionEvent.load(entity)),
-        child: BlocBuilder<SongCollectionBloc, SongCollectionState>(
+    return BlocProvider<SongCollectionBloc>(
+      create: (context) => SongCollectionBloc(context.read<SaavnRepository>())
+        ..add(SongCollectionEvent.load(entity)),
+      child: Scaffold(
+        body: BlocBuilder<SongCollectionBloc, SongCollectionState>(
           builder: (context, state) {
             return state.when(
               initial: () => SizedBox.shrink(),
               loading: () => Center(child: CupertinoActivityIndicator()),
               error: (error) => Center(child: Text(error)),
-              data: (data) => ScrollGlowRemove(
-                child: SingleChildScrollView(
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: MediaQuery.of(context).size.height * .3,
-                        width: MediaQuery.of(context).size.height * .3,
-                        child: ClipRRect(
-                          borderRadius: BorderRadius.circular(12.0),
-                          child: CachedNetworkImage(
-                            imageUrl: data.image,
-                            fit: BoxFit.cover,
+              data: (data) => Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      context.read<SongCollectionBloc>().color,
+                      AppColors.backgroundColor,
+                    ],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  ),
+                ),
+                child: ScrollGlowRemove(
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        SizedBox(height: 56.0),
+                        SizedBox(
+                          height: MediaQuery.of(context).size.height * .3,
+                          width: MediaQuery.of(context).size.height * .3,
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(12.0),
+                            child: CachedNetworkImage(
+                              imageUrl: data.image,
+                              fit: BoxFit.cover,
+                            ),
                           ),
                         ),
-                      ),
-                      SizedBox(height: 12.0),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 17.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Flexible(
-                                  child: Text(
-                                    '${data.title}',
-                                    style: TextStyle(
-                                      color: AppColors.whiteColor,
-                                      fontSize: 18.0,
-                                      fontWeight: FontWeight.bold,
+                        SizedBox(height: 12.0),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 17.0),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                crossAxisAlignment: CrossAxisAlignment.center,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      '${data.title}',
+                                      style: TextStyle(
+                                        color: AppColors.whiteColor,
+                                        fontSize: 18.0,
+                                        fontWeight: FontWeight.bold,
+                                      ),
                                     ),
                                   ),
-                                ),
-                                SizedBox(width: 8.0),
-                                Text(
-                                  '${data.listCount} ${data.listCount == "1" ? "Song" : "Songs"}',
-                                  style: TextStyle(
-                                    color: AppColors.whiteColor.withOpacity(.5),
-                                    fontSize: 14.0,
+                                  SizedBox(width: 8.0),
+                                  Text(
+                                    '${data.listCount} ${data.listCount == "1" ? "Song" : "Songs"}',
+                                    style: TextStyle(
+                                      color: AppColors.whiteColor.withOpacity(.5),
+                                      fontSize: 14.0,
+                                    ),
                                   ),
-                                ),
-                              ],
-                            ),
-                            Text(
-                              data.subtitle,
-                              style: TextStyle(
-                                color: AppColors.whiteColor.withOpacity(.5),
-                                fontSize: 14.0,
+                                ],
                               ),
-                            ),
-                            Text(
-                              data.headerDesc,
+                              Text(
+                                data.subtitle,
+                                style: TextStyle(
+                                  color: AppColors.whiteColor.withOpacity(.5),
+                                  fontSize: 14.0,
+                                ),
+                              ),
+                              Text(
+                                data.headerDesc,
+                                style: TextStyle(
+                                  color: AppColors.whiteColor.withOpacity(.5),
+                                  fontSize: 12.0,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        ListView.builder(
+                          shrinkWrap: true,
+                          padding: const EdgeInsets.symmetric(vertical: 12.0),
+                          physics: NeverScrollableScrollPhysics(),
+                          itemCount: data.list.length,
+                          itemBuilder: (context, index) => ListTile(
+                            onTap: () {
+                              data.list[index].play(context);
+                            },
+                            title: Text(
+                              data.list[index].title,
                               style: TextStyle(
-                                color: AppColors.whiteColor.withOpacity(.5),
+                                color: AppColors.whiteColor,
+                                fontSize: 14.0,
+                                fontWeight: FontWeight.bold,
+                                letterSpacing: 0.8,
+                              ),
+                              maxLines: 1,
+                            ),
+                            subtitle: Text(
+                              data.list[index].subtitle,
+                              style: TextStyle(
+                                color: AppColors.whiteColor.withOpacity(.4),
                                 fontSize: 12.0,
                               ),
+                              maxLines: 1,
                             ),
-                          ],
-                        ),
-                      ),
-                      ListView.builder(
-                        shrinkWrap: true,
-                        padding: const EdgeInsets.symmetric(vertical: 12.0),
-                        physics: NeverScrollableScrollPhysics(),
-                        itemCount: data.list.length,
-                        itemBuilder: (context, index) => ListTile(
-                          onTap: () {
-                            data.list[index].play(context);
-                          },
-                          title: Text(
-                            data.list[index].title,
-                            style: TextStyle(
-                              color: AppColors.whiteColor,
-                              fontSize: 14.0,
-                              fontWeight: FontWeight.bold,
-                              letterSpacing: 0.8,
+                            trailing: IconButton(
+                              onPressed: () {},
+                              icon: Icon(
+                                Icons.download,
+                                color: AppColors.whiteColor.withOpacity(.6),
+                              ),
                             ),
-                            maxLines: 1,
-                          ),
-                          subtitle: Text(
-                            data.list[index].subtitle,
-                            style: TextStyle(
-                              color: AppColors.whiteColor.withOpacity(.4),
-                              fontSize: 12.0,
-                            ),
-                            maxLines: 1,
-                          ),
-                          trailing: IconButton(
-                            onPressed: () {},
-                            icon: Icon(
-                              Icons.download,
-                              color: AppColors.whiteColor.withOpacity(.6),
-                            ),
-                          ),
-                          leading: CircleAvatar(
-                            backgroundImage: CachedNetworkImageProvider(
-                              data.list[index].image,
+                            leading: CircleAvatar(
+                              backgroundImage: CachedNetworkImageProvider(
+                                data.list[index].image,
+                              ),
                             ),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
                 ),
               ),

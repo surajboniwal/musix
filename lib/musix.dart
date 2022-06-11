@@ -37,7 +37,7 @@ class MusixApp extends StatelessWidget {
                             const EdgeInsets.symmetric(horizontal: 8.0),
                         width: MediaQuery.of(context).size.width,
                         decoration: BoxDecoration(
-                          color: Colors.black,
+                          color: context.read<SongBloc>().color,
                           borderRadius: BorderRadius.circular(8.0),
                         ),
                         child: Row(
